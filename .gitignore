@@ -1,0 +1,8 @@
+distLambda/
+*.zip
+*.exe
+localDevelopment/
+vendor/
+.env.dev
+main
+*.zip

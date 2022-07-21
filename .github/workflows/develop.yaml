@@ -1,0 +1,27 @@
+name: Deploy to AWS
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  deploy_source:
+    name: Build and deploy FaaS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.3'
+      - run: GOOS=linux CGO_ENABLED=0 go build -o main .
+      - name: Zip
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./faas.zip main
+      - name: Deploy
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-east-2
+          function_name: derco-backend-develop
+          zip_file: faas.zip
